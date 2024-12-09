@@ -2,18 +2,31 @@ const crypto = require('crypto'); // Para generar claves únicas
 const db = require('../config/database'); // Conexión a MySQL
 const Usuario = require('../models/Usuario'); // Modelo Usuario
 const Administrativo = require('../models/Administrativo'); // Modelo Administrativo
-
+let contador=1;
 // Registrar usuario(controlador)
 exports.registerUser = async (req, res) => {
   const { rol, correo, contrasena, nombre, apellidoPaterno, apellidoMaterno, telefono } = req.body;
-
+ 
   if (!rol || !correo || !contrasena) {
     return res.status(400).json({ message: 'Por favor, proporciona todos los datos requeridos' });
   }
+  
+  function generarClaveUsuario() {//Todos los caracteres en mayuscula
+    const nombreParte = (nombre || '').slice(0, 3).toUpperCase(); // 2 caracteres del nombre
+    const apellidoPaternoParte = (apellidoPaterno || '').slice(0, 3).toUpperCase(); // 2 caracteres del apellido paterno
+    const apellidoMaternoParte = (apellidoMaterno || '').slice(0, 3).toUpperCase(); // 2 caracteres del apellido materno
+    return `${nombreParte}${apellidoPaternoParte}${apellidoMaternoParte}`; // Solo concatenamos las partes
+  }
 
-  //const ClaveUsuario = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).substr(0, 10);
-  const ClaveUsuario = crypto.randomBytes(5).toString('hex');
-  console.log('ClaveUsuario generada:', ClaveUsuario);
+  // Generar clave
+  const ClaveUsuario = generarClaveUsuario();
+  console.log("ClaveUsuario generada:", ClaveUsuario);
+ 
+   //console.log("ClaveUsuario generada:", ClaveUsuario);
+  
+
+  //const ClaveUsuario = crypto.randomBytes(5).toString('hex');
+  //console.log('ClaveUsuario generada:', ClaveUsuario);
 
   const t = await db.transaction(); // Inicia una transacción
 
@@ -34,7 +47,17 @@ exports.registerUser = async (req, res) => {
         throw new Error('Faltan datos para registrar al administrativo');
       }
 
-      const ClaveAdmin = crypto.randomBytes(5).toString('hex');
+
+      //Generar la clave de Admin
+      function generarClaveAdmin() {
+        const nombreParte = (nombre || '').slice(0, 2).toUperCase(); // 2 caracteres del nombre
+        const apellidoPaternoParte = (apellidoPaterno || '').slice(0, 2).toUpperCase(); // 2 caracteres del apellido paterno
+        const apellidoMaternoParte = (apellidoMaterno || '').slice(0, 2).toUpperCase(); // 2 caracteres del apellido materno
+        const numero = String(contador).padStart(4, '0');
+        contador ++;
+        return `${nombreParte}${apellidoPaternoParte}${apellidoMaternoParte}${numero}`; // Solo concatenamos las partes
+      }
+      const ClaveAdmin = generarClaveAdmin();//crypto.randomBytes(5).toString('hex');
       console.log('ClaveAdmin:', ClaveAdmin);
 
       await Administrativo.create(
