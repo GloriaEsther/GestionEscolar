@@ -1,13 +1,13 @@
 //import React from 'react';
 
-function AdminDashboard() {
+function Admin() {
   return (
     <div>
-      <h2>Admin Dashboard</h2>
-      <p>Bienvenido al panel de administración.</p>
+      <h2>Bienvenido</h2>
+      <p>en esta parte se mostraran las opciones para administrador</p>
       {/* Aquí puedes agregar más funcionalidades para el administrador */}
     </div>
   );
 }
 
-export default AdminDashboard;
+export default Admin;

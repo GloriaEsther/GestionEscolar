@@ -1,0 +1,64 @@
+/* Aumentar el tamaño del contenedor */
+.register-form {
+    max-width: 400px; /* Aumenta el tamaño máximo del contenedor */
+    margin: 0 auto; /* Centra el contenedor en la pantalla */
+    padding: 40px; /* Aumenta el espacio dentro del contenedor */
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Estilo para los campos de entrada */
+  input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  /* Reducir el tamaño de los botones */
+  button {
+    padding: 8px 16px; /* Reducir el padding (espacio interior) del botón */
+    font-size: 14px; /* Reducir el tamaño de la fuente */
+    height: auto; /* Ajustar la altura del botón */
+    cursor: pointer;
+  }
+  
+  button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button[type="button"] {
+    background-color: #ddd;
+    color: #333;
+    margin-top: 10px;
+  }
+  
+  /* Estilos de hover para los botones */
+  button:hover {
+    background-color: #0056b3; /* Cambiar color en el hover para el botón de submit */
+  }
+  
+  button[type="button"]:hover {
+    background-color: #ccc; /* Cambiar color en el hover para el botón de cancelación */
+  }
+  
+  /* Estilo para los mensajes de error y éxito */
+  .error-message {
+    color: red;
+  }
+  
+  .success-message {
+    color: green;
+  }
+  

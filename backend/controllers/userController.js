@@ -3,6 +3,20 @@ const db = require('../config/database'); // Conexión a MySQL
 const Usuario = require('../models/Usuario'); // Modelo Usuario
 const Administrativo = require('../models/Administrativo'); // Modelo Administrativo
 let contador=1;
+
+function generarClaveUsuario() {
+  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Letras posibles
+  let clave = '';
+  
+  // Generar diez letras aleatorias
+  for (let i = 0; i < 10; i++) {
+    const indice = crypto.randomInt(0, letras.length); // Genera un índice aleatorio
+    clave += letras[indice]; // Agrega la letra a la clave
+  }
+
+  return clave; // Regresa la clave generada
+}
+
 // Registrar usuario(controlador)
 exports.registerUser = async (req, res) => {
   const { rol, correo, contrasena, nombre, apellidoPaterno, apellidoMaterno, telefono } = req.body;
@@ -11,22 +25,30 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ message: 'Por favor, proporciona todos los datos requeridos' });
   }
   
-  function generarClaveUsuario() {//Todos los caracteres en mayuscula
+  /*function generarClaveUsuario() {//Todos los caracteres en mayuscula
     const nombreParte = (nombre || '').slice(0, 3).toUpperCase(); // 2 caracteres del nombre
     const apellidoPaternoParte = (apellidoPaterno || '').slice(0, 3).toUpperCase(); // 2 caracteres del apellido paterno
     const apellidoMaternoParte = (apellidoMaterno || '').slice(0, 3).toUpperCase(); // 2 caracteres del apellido materno
     return `${nombreParte}${apellidoPaternoParte}${apellidoMaternoParte}`; // Solo concatenamos las partes
-  }
+  }*/
+    /*function generarClaveUsuario() {
+      const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Letras posibles
+      let clave = '';
 
+      // Generar tres letras aleatorias
+      for (let i = 0; i < 3; i++) {
+        const indice = crypto.randomInt(0, letras.length); // Genera un índice aleatorio
+        clave += letras[indice]; // Agrega la letra a la clave
+      }
+
+      const numero = String(contador).padStart(4, '0');
+      contador++;
+      return `${clave}${numero}`; // Regresa la clave generada
+    }
+*/
   // Generar clave
   const ClaveUsuario = generarClaveUsuario();
   console.log("ClaveUsuario generada:", ClaveUsuario);
- 
-   //console.log("ClaveUsuario generada:", ClaveUsuario);
-  
-
-  //const ClaveUsuario = crypto.randomBytes(5).toString('hex');
-  //console.log('ClaveUsuario generada:', ClaveUsuario);
 
   const t = await db.transaction(); // Inicia una transacción
 
@@ -50,7 +72,7 @@ exports.registerUser = async (req, res) => {
 
       //Generar la clave de Admin
       function generarClaveAdmin() {
-        const nombreParte = (nombre || '').slice(0, 2).toUperCase(); // 2 caracteres del nombre
+        const nombreParte = (nombre || '').slice(0, 2).toUpperCase(); // 2 caracteres del nombre
         const apellidoPaternoParte = (apellidoPaterno || '').slice(0, 2).toUpperCase(); // 2 caracteres del apellido paterno
         const apellidoMaternoParte = (apellidoMaterno || '').slice(0, 2).toUpperCase(); // 2 caracteres del apellido materno
         const numero = String(contador).padStart(4, '0');
