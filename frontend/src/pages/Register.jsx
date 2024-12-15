@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-//import "./FormStyles.css";
-import "./Register.css"; 
+import "./Register.css";
 
 const Register = () => {
   const [correo, setCorreo] = useState("");
@@ -10,6 +9,7 @@ const Register = () => {
   const [extraFields, setExtraFields] = useState({});
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState(""); // Mensaje de éxito
+  const [emailError] = useState(""); // Error de correo duplicado
   const navigate = useNavigate();
 
   const handleRoleChange = (e) => {
@@ -19,19 +19,49 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    // Validación de campos
-    if (!correo || !contrasena || !rol) {
-      setError("Por favor, completa todos los campos obligatorios.");
+    if (!correo || !contrasena || !rol) {// Si no ingresas correo, contraseña o rol(cualquier usuario)
+      alert("Datos incompletos, intente de nuevo");
       return;
     }
+    // Verificar si hay un error con el correo antes de continuar con el registro
+    if (emailError) {
+      //setError("Por favor, resuelve el error de correo.");
+       //alert("Correo electronico existente");
+       console.log("Correo electronico existente");
+      return;
+    }
+    //Validaciones en registro de admin(Datos incorrectos)
+   
+    if (rol === "administrativo") {
+      const { nombre, apellidoPaterno, apellidoMaterno, telefono } = extraFields;
+      if (!nombre || !apellidoPaterno || !apellidoMaterno || !telefono) {//este es de datos incompletos
+        alert("Datos incompletos. Por favor, complete todos los campos.");
+        return;
+      }
+      
+      const nombreRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
+      const telefonoRegex = /^[0-9]+$/;   // Solo números
+      
+      if (!nombre || !nombreRegex.test(nombre)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!apellidoPaterno || !nombreRegex.test(apellidoPaterno)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!apellidoMaterno || !nombreRegex.test(apellidoMaterno)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!telefono || !telefonoRegex.test(telefono)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }
+     }
 
     const userData = { correo, contrasena, rol, ...extraFields };
     console.log("Datos enviados:", userData);
-
     try {
       // Llamada a la API de registro
-      const response = await fetch("http://localhost:8000/api/users/register", { // Reemplaza con tu URL real
+      const response = await fetch("http://localhost:8000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,26 +72,26 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessMessage("Usuario registrado correctamente"); // Mostrar mensaje de éxito
-        alert("Usuario registrado exitosamente");
-        setError(""); // Limpiar cualquier mensaje de error
+        setSuccessMessage("Usuario registrado correctamente");
+        alert("El usuario fue registrado exitosamente");
+        setError("");
 
         // Redirigir al login o a la página de inicio según el rol
         if (rol === "administrativo") {
-          navigate("/admin"); // Redirige a la pantalla de administrador
+          navigate("/admin");
         } else if (rol === "alumno") {
-          navigate("/alumno"); // Redirige a la pantalla de alumno
+          navigate("/alumno");
         }
       } else {
-        setError(data.message || "Error al registrar usuario.");
-        alert("Datos incorrectos,intente de nuevo");
-        setSuccessMessage(""); // Limpiar mensaje de éxito si hubo un error
-
+        if (data.message.includes("existente")) {
+          alert("Correo electronico existente");
+          setCorreo("");//Limpiar campo correo
+        }
+        setSuccessMessage("");
       }
     } catch (error) {
       console.error("Error en la llamada a la API:", error);
-      setError("Error al conectar con el servidor.");
-      setSuccessMessage(""); // Limpiar mensaje de éxito si hubo un error
+      setSuccessMessage("");
     }
   };
 
@@ -83,6 +113,8 @@ const Register = () => {
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
         />
+        {emailError && <p className="error-message">{emailError}</p>} {/* Mostrar error si el correo ya está registrado */}
+
         <input
           type="password"
           placeholder="Contraseña"
