@@ -14,8 +14,7 @@ const Login = () => {
 
       // Validación de campos
       if (!ClaveUsuario || !contrasena) {
-        //setError("Por favor, completa todos los campos.");
-        alert(error.message || "Por favor, completa todos los campos");
+        alert(error.message || "Datos incompletos");
         return;
       }
 
@@ -30,34 +29,30 @@ const Login = () => {
         });
 
         console.log("Estado de la respuesta:", response.status);
-
-        if (!response.ok) {
-          //const errorData = await response.json();
-          //setError(errorData.message || "Credenciales inválidas");
-          //alert("Usuario inexistente,vuelve a intentarlo");
-          const errorData = await response.json();
-          alert(errorData.message || "Usuario inexistente, vuelve a intentarlo");
-          return;
-        }
-
         const data = await response.json();
-        console.log("Datos recibidos del servidor:", data);
-
-        //const role = data?.rol || data?.role; // Asegúrate de que el rol existe
         const role = data?.user?.rol; // Extrae correctamente el rol 
-        if (!role) {
-          setError("Rol no reconocido en la respuesta del servidor.");
-          return;
-        }
-
-        // Navegación según el rol
-        if (role === "administrativo") {
-          navigate("/admin");
-        } else if (role === "alumno") {
-          navigate("/alumno");
-        } else {
-          setError("Rol no reconocido.");
-        }
+        console.log("Datos recibidos del servidor:", data);
+        if(response.ok){
+          if (!role) {//si no esta
+            //  setError("Rol no reconocido en la respuesta del servidor.");
+              return;
+            }
+          // Navegación según el rol
+          if (role === "administrativo") {
+            navigate("/admin");
+          } else if (role === "alumno") {
+            navigate("/alumno");
+          } else {
+            setError("Rol no reconocido.");
+          }
+        }else{//si la respuesta es exitosa
+          if(data.message.includes("incorrectos")){
+            alert("Usuario o contrasena incorrectos,vuelve a intentarlo");
+            setClaveUsuario("");//limpia las labeles
+            setContrasena("");//x2
+            return;
+          }
+        }  
       } catch (error) {
         console.error("Error al conectar con el servidor:", error);
         setError("Error al conectar con el servidor.");

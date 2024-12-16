@@ -10,6 +10,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState(""); // Mensaje de éxito
   const [emailError] = useState(""); // Error de correo duplicado
+
   const navigate = useNavigate();
 
   const handleRoleChange = (e) => {
@@ -23,13 +24,16 @@ const Register = () => {
       alert("Datos incompletos, intente de nuevo");
       return;
     }
-    // Verificar si hay un error con el correo antes de continuar con el registro
+
     if (emailError) {
-      //setError("Por favor, resuelve el error de correo.");
-       //alert("Correo electronico existente");
        console.log("Correo electronico existente");
       return;
     }
+    if (contrasena.length > 10) {
+      alert("La contraseña es demasiado larga, debe tener máximo 10 caracteres.");
+      return; // Evita que continúe con el registro
+    }
+
     //Validaciones en registro de admin(Datos incorrectos)
    
     if (rol === "administrativo") {
@@ -38,7 +42,6 @@ const Register = () => {
         alert("Datos incompletos. Por favor, complete todos los campos.");
         return;
       }
-      
       const nombreRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
       const telefonoRegex = /^[0-9]+$/;   // Solo números
       
@@ -57,6 +60,7 @@ const Register = () => {
       }
      }
 
+   //
     const userData = { correo, contrasena, rol, ...extraFields };
     console.log("Datos enviados:", userData);
     try {
@@ -72,16 +76,14 @@ const Register = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccessMessage("Usuario registrado correctamente");
-        alert("El usuario fue registrado exitosamente");
-        setError("");
-
-        // Redirigir al login o a la página de inicio según el rol
-        if (rol === "administrativo") {
-          navigate("/admin");
-        } else if (rol === "alumno") {
-          navigate("/alumno");
-        }
+          if (data.ClaveAdmin && rol==="administrativo") {
+            alert(`El usuario fue registrado exitosamente.\nClaveUsuario: ${data.ClaveUsuario}, ClaveAdmin: ${data.ClaveAdmin},Contraseña: ${contrasena}`);
+            navigate("/admin");
+          } else if(data.ClaveUsuario&& rol==="alumno") {
+            alert(`El usuario fue registrado exitosamente.\nClaveUsuario: ${data.ClaveUsuario},Contrasena:${contrasena}`);
+            navigate("/alumno");
+          }
+          setError("");
       } else {
         if (data.message.includes("existente")) {
           alert("Correo electronico existente");
