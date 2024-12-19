@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Register.css";
 
 const Register = () => {
-  const [correo, setCorreo] = useState("");
+  const [correo, setCorreo] = useState(" " );
   const [contrasena, setContrasena] = useState("");
   const [rol, setRol] = useState("");
   const [extraFields, setExtraFields] = useState({});

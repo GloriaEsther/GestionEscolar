@@ -42,6 +42,20 @@ Alumnos.init(
         notEmpty: true,
       },
     },
+    Grado:{
+      type:DataTypes.INTEGER,
+      allowNull:false,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    FechaNacimiento:{
+      type:DataTypes.DATE,
+      allowNull:false,
+      validate: {
+        isDate: true,
+      },
+    },
     NombreTutor:{
       type:DataTypes.STRING(45),
       allowNull:false,
@@ -75,13 +89,6 @@ Alumnos.init(
       allowNull:false,
       validate: {
         isEmail: true,
-      },
-    },
-    FechaNacimiento:{
-      type:DataTypes.DATE,
-      allowNull:false,
-      validate: {
-        isDate: true,
       },
     },
     ClaveUsuario: {

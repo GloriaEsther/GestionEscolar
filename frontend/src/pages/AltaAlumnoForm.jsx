@@ -1,144 +1,191 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
+import "./AltaAlumno.css";
 const AltaAlumnoForm = () => {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    apellidoPaterno: "",
-    apellidoMaterno: "",
-    curp: "",
-    grado: "",
-    fechaNacimiento: "",
-    telefonoTutor: "",
-    nombreTutor: "",
-    apellidoPaternoTutor: "",
-    apellidoMaternoTutor: "",
-    correoTutor: "",
-    registradoPor: "",
-  });
+/*
+  const [correo, setCorreo] = useState("");
+  const [nombre, setNombre] = useState("");
+  const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [apellidoMaterno, setApellidoMaterno] = useState("");
+  const [curp, setCurp] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [registradoPor, setRegistradoPor] = useState(""); // Este campo lo asigna el administrativo
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
+  //const [error] = useState(""); // Mensaje de error
+*/
+  const [nombreAlumno, setNombreAlumno] = useState("");
+  const [apellidoPaterno, setApellidoPaterno] = useState("");
+  const [apellidoMaterno, setApellidoMaterno] = useState("");
+  const [curp, setCurp] = useState("");
+  const [grado, setGrado] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [correo, setCorreo] = useState(""); // Correo del usuario (para verificar rol de alumno)
+  const [nombreTutor, setNombreTutor] = useState("");
+  const [apellidoPaternoT, setApellidoPaternoT] = useState("");
+  const [apellidoMaternoT, setApellidoMaternoT] = useState("");
+  const [correoT, setCorreoT] = useState("");
+  const [numTelT, setNumTelT] = useState("");
+  const [registradoPor, setRegistradoPor] = useState(""); // Clave del administrativo
+  //const [claveUsuario, setClaveUsuario] = useState(""); // Clave del usuario
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+      if (!nombreAlumno || !apellidoPaterno || !apellidoMaterno || !curp || !grado || !fechaNacimiento || !correo || !nombreTutor || !apellidoPaternoT || !apellidoMaternoT || !numTelT || !correoT || !registradoPor /*|| !claveUsuario*/) {
+        alert("Datos incompletos, por favor complete todos los campos.");
+        return;
+      }
+      const alumnoData = {
+        NombreAlumno: nombreAlumno,
+        ApellidoPaterno: apellidoPaterno,
+        ApellidoMaterno: apellidoMaterno,
+        CURP: curp,
+        Grado: grado,
+        FechaNacimiento: fechaNacimiento,
+        correo,
+        NombreTutor: nombreTutor,
+        ApellidoPaternoT: apellidoPaternoT,
+        ApellidoMaternoT: apellidoMaternoT,
+        correoT,
+        NumtelT: numTelT,
+        Registradopor: registradoPor, // Clave del administrativo que registra al alumno
+       // ClaveUsuario: claveUsuario, // Clave del usuario asociado
+      };
+   // const alumnoData = { nombre, apellidoPaterno, apellidoMaterno, curp, correo, telefono, registradoPor };
+    
+   console.log("Datos enviados:", alumnoData);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/alumnos/crearalumno", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(alumnoData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccessMessage("El alumno fue registrado exitosamente.");
+        alert("El alumno fue registrado exitosamente");
+       // navigate("/alumnos"); // Redirige a la página de alumnos, por ejemplo
+      } else {
+        setError(data.message || "Error al registrar el alumno");
+      }
+    } catch (error) {
+      console.error("Error en la llamada a la API:", error);
+      setError("Hubo un problema con la solicitud.");
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Datos del formulario:", formData);
-    alert("Alumno registrado con éxito.");
+  const Cancelar = () => {
+    navigate("/admin"); // Redirige a la página de inicio de aadmin
+  };
+
+  const Regresar = () => {
+    navigate("/admin"); // Redirige a la página anterior
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: "600px", margin: "0 auto" }}>
-      <h2>Alta de Alumno</h2>
-      <div>
-        <label>Nombre:</label>
-        <input type="text" name="nombre" value={formData.nombre} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Apellido Paterno:</label>
+    <div className="register-form">
+      <h2>Registrar Alumno</h2>
+      <form onSubmit={handleRegister}>
         <input
           type="text"
-          name="apellidoPaterno"
-          value={formData.apellidoPaterno}
-          onChange={handleChange}
-          required
+          placeholder="Nombre Alumno"
+          value={nombreAlumno}
+          onChange={(e) => setNombreAlumno(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Apellido Materno:</label>
         <input
           type="text"
-          name="apellidoMaterno"
-          value={formData.apellidoMaterno}
-          onChange={handleChange}
-          required
+          placeholder="Apellido Paterno"
+          value={apellidoPaterno}
+          onChange={(e) => setApellidoPaterno(e.target.value)}
         />
-      </div>
-      <div>
-        <label>CURP:</label>
-        <input type="text" name="curp" value={formData.curp} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Grado:</label>
+        <input
+          type="text"
+          placeholder="Apellido Materno"
+          value={apellidoMaterno}
+          onChange={(e) => setApellidoMaterno(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="CURP"
+          value={curp}
+          onChange={(e) => setCurp(e.target.value)}
+        />
         <input
           type="number"
-          name="grado"
-          value={formData.grado}
-          onChange={handleChange}
-          required
+          placeholder="Grado"
+          value={grado}
+          onChange={(e) => setGrado(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Fecha de Nacimiento:</label>
-        <input
+          <input
           type="date"
-          name="fechaNacimiento"
-          value={formData.fechaNacimiento}
-          onChange={handleChange}
-          required
+          placeholder="Fecha de Nacimiento"
+          value={fechaNacimiento}
+          onChange={(e) => setFechaNacimiento(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Número Telefónico del Tutor:</label>
-        <input
-          type="tel"
-          name="telefonoTutor"
-          value={formData.telefonoTutor}
-          onChange={handleChange}
-          required
+         <input
+          type="email"
+          placeholder="Correo electrónico"
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Nombre del Tutor:</label>
         <input
           type="text"
-          name="nombreTutor"
-          value={formData.nombreTutor}
-          onChange={handleChange}
-          required
+          placeholder="Nombre Tutor"
+          value={nombreTutor}
+          onChange={(e) => setNombreTutor(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Apellido Paterno del Tutor:</label>
         <input
           type="text"
-          name="apellidoPaternoTutor"
-          value={formData.apellidoPaternoTutor}
-          onChange={handleChange}
-          required
+          placeholder="Apellido Paterno Tutor"
+          value={apellidoPaternoT}
+          onChange={(e) => setApellidoPaternoT(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Apellido Materno del Tutor:</label>
         <input
           type="text"
-          name="apellidoMaternoTutor"
-          value={formData.apellidoMaternoTutor}
-          onChange={handleChange}
-          required
+          placeholder="Apellido Materno Tutor"
+          value={apellidoMaternoT}
+          onChange={(e) => setApellidoMaternoT(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Correo del Tutor:</label>
+       <input
+          type="text"
+          placeholder="Telefono Tutor"
+          value={numTelT}
+          onChange={(e) =>setNumTelT(e.target.value)}
+        />
         <input
           type="email"
-          name="correoTutor"
-          value={formData.correoTutor}
-          onChange={handleChange}
-          required
+          placeholder="Correo electrónico Tutor"
+          value={correoT}
+          onChange={(e) => setCorreoT(e.target.value)}
         />
-      </div>
-      <div>
-        <label>Registrado Por:</label>
+        
         <input
           type="text"
-          name="registradoPor"
-          value={formData.registradoPor}
-          onChange={handleChange}
-          required
+          placeholder="Registrado por (nombre del administrativo)"
+          value={registradoPor}
+          onChange={(e) => setRegistradoPor(e.target.value)}
         />
-      </div>
-      <button type="submit">Registrar Alumno</button>
-    </form>
+
+        <button type="submit">Guardar</button>
+      </form>
+
+      {error && <p className="error-message">{error}</p>}
+      {successMessage && <p className="success-message">{successMessage}</p>}
+
+      <button onClick={Cancelar}>Cancelar</button>
+      <button onClick={Regresar}>Regresar</button>
+    </div>
   );
 };
 

@@ -4,7 +4,9 @@ const Usuarios = require('../models/Usuarios'); // Modelo Usuario
 const Administrativos = require('../models/Administrativo'); // Modelo Administrativo
 let contador=1;
 const Alumnos =require('../models/Alumnos');
-
+//const jwt = require('jsonwebtoken');
+//const claveGenerada = '';
+//let claveGenerada = null;
 function generarClaveUsuario() {
   const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Letras posibles
   let clave = '';
@@ -27,9 +29,10 @@ exports.registerUser = async (req, res) => {
   }
   
   // Generar clave
-  const ClaveUsuario = generarClaveUsuario();
+  const ClaveUsuario = generarClaveUsuario();//esto es el original
+  //claveGenerada=generarClaveUsuario();
   console.log("ClaveUsuario generada:", ClaveUsuario);
-
+  
   const t = await db.transaction(); // Inicia una transacción
 
   try {
@@ -74,7 +77,7 @@ exports.registerUser = async (req, res) => {
           ApellidoPaterno: apellidoPaterno,
           ApellidoMaterno: apellidoMaterno,
           NumTelefono: telefono,
-          ClaveUsuario: ClaveUsuario,
+          ClaveUsuario:ClaveUsuario,
         },
         { transaction: t }
       );
@@ -82,8 +85,25 @@ exports.registerUser = async (req, res) => {
       await t.commit(); // Confirma la transacción
       return res.status(201).json({ message: 'Usuario administrativo registrado', ClaveUsuario, ClaveAdmin });
     } else if (rol === 'alumno') {
-      await t.commit(); // Confirma la transacción
-      return res.status(201).json({ message: 'Usuario alumno registrado', ClaveUsuario });
+      try {//en el try apenas es prueba con esto se crea el usuario alumno y se manda la clave al endpoint de alumnos para terminar el registro de los detalles del alumno(alta de alumno)
+        // Crea el usuario (ya existente en tu código)
+        await t.commit(); // Confirma la transacción de Usuarios
+    
+        // Envía la clave de usuario al cliente para usarla en la creación del alumno
+        return res.status(201).json({
+          message: 'Usuario alumno registrado, ahora registra los detalles del alumno',
+          ClaveUsuario, // Clave del usuario recién creado
+        });
+      } catch (error) {
+        console.error('Error al registrar alumno:', error);
+        await t.rollback();
+        return res.status(500).json({
+          message: 'Error al registrar el usuario y alumno',
+          error,
+        });
+      }
+      //await t.commit(); // Confirma la transacción
+      //return res.status(201).json({ message: 'Usuario alumno registrado', ClaveUsuario });
     } else {
       throw new Error('Rol no válido');
     }
@@ -101,6 +121,7 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+//exports.getClaveGenerada = () => claveGenerada;//claveusuario
 // Login de usuario//lo mismo pero es /login
 exports.loginUser = async (req, res) => {
   const { ClaveUsuario, contrasena } = req.body;
@@ -121,6 +142,13 @@ exports.loginUser = async (req, res) => {
         .status(404)
         .json({ error: true, message: 'Usuario o contrasena incorrectos' });
     }
+    /*const token = jwt.sign(
+      { ClaveUsuario: usuario.ClaveUsuario, rol: usuario.rol }, // Datos que deseas incluir en el token
+      process.env.JWT_SECRET, // La clave secreta (esto debe estar en tu archivo .env)
+      { expiresIn: '1h' } // El token expira en 1 hora
+    );*/
+
+
     // Usuario y contraseña válidos
     return res.status(200).json({
       error: false,
@@ -132,89 +160,14 @@ exports.loginUser = async (req, res) => {
         contrasena:usuario.contrasena,
       },
     });
+    // Devolver el token
+    //res.json({ token });
   } catch (error) {
     console.error('Error durante el login:', error);
     return res.status(500).json({
       error: true,
       message: 'Error al iniciar sesión, inténtalo más tarde',
       details: error.message,
-    });
-  }
-};
-//registrar alumno prueba mia
-/*exports.AltaAlumno =async(req,res)=>{
-  const { ClaveAlumno,Nombrealumno,Apellidopaterno,Apellidomaterno,
-           curp,Nombretutor,ApellidoPaternot,ApellidoMaternot,Numt,correot,
-           Fechanacimiento,ClaveUsuario,Registradopor } = req.body;
-
-
-};
-*/
-// Registrar un nuevo alumno
-exports.createAlumno = async (req, res) => {
-  try {
-    const nuevoAlumno = await Alumno.create(req.body);
-    res.status(201).json({
-      message: 'Alumno registrado con éxito',
-      alumno: nuevoAlumno,
-    });
-  } catch (error) {
-    console.error('Error al registrar alumno:', error);
-    res.status(500).json({
-      message: 'Error al registrar alumno',
-      error,
-    });
-  }
-};
-
-// Consultar todos los alumnos
-exports.getAlumnos = async (req, res) => {
-  try {
-    const alumnos = await Alumno.findAll();
-    res.status(200).json(alumnos);
-  } catch (error) {
-    console.error('Error al obtener alumnos:', error);
-    res.status(500).json({
-      message: 'Error al obtener alumnos',
-      error,
-    });
-  }
-};
-
-// Consultar un alumno por ID
-exports.getAlumnoById = async (req, res) => {
-  try {
-    const alumno = await Alumno.findByPk(req.params.id);
-    if (!alumno) {
-      return res.status(404).json({ message: 'Alumno no encontrado' });
-    }
-    res.status(200).json(alumno);
-  } catch (error) {
-    console.error('Error al obtener alumno:', error);
-    res.status(500).json({
-      message: 'Error al obtener alumno',
-      error,
-    });
-  }
-};
-
-// Actualizar un alumno
-exports.updateAlumno = async (req, res) => {
-  try {
-    const alumno = await Alumno.findByPk(req.params.id);
-    if (!alumno) {
-      return res.status(404).json({ message: 'Alumno no encontrado' });
-    }
-    await alumno.update(req.body);
-    res.status(200).json({
-      message: 'Alumno actualizado con éxito',
-      alumno,
-    });
-  } catch (error) {
-    console.error('Error al actualizar alumno:', error);
-    res.status(500).json({
-      message: 'Error al actualizar alumno',
-      error,
     });
   }
 };

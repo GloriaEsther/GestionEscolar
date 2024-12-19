@@ -2,7 +2,9 @@ const Usuarios = require('./Usuarios');
 const Administrativos = require('./Administrativo');
 const Alumnos =require("./Alumnos");
 const Documento =require("./Documento");
-
+/*const express = require('express');
+const app = express();
+ */
 // Relación uno a uno: un Usuario puede ser un Administrativo
 Usuarios.hasOne(Administrativos, { foreignKey: 'ClaveUsuario', onDelete: 'CASCADE' });
 Administrativos.belongsTo(Usuarios, { foreignKey: 'ClaveUsuario' });
@@ -36,6 +38,13 @@ Alumnos.belongsTo(Administrativos, {
     foreignKey: 'ClaveAlumno', // Clave foránea en `Documento`
     as: 'alumno', // Alias para acceder al alumno desde un documento
   });  
+
+  const express = require('express');
+const app = express();
+
+// Middleware para procesar JSON
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 
 module.exports = { Usuarios, Administrativos,Alumnos ,Documento};

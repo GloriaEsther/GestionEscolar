@@ -1,0 +1,75 @@
+/* Estilo general del formulario */
+.register-form {
+    max-width: 600px; /* Ancho máximo del formulario */
+    margin: 0 auto; /* Centra el formulario en la pantalla */
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: grid;
+    grid-template-columns: 1fr; /* Una columna para cada campo */
+    gap: 10px; /* Espacio entre los campos */
+    box-sizing: border-box; /* Incluye el padding y borde en el tamaño total */
+    overflow-y: auto; /* Permite desplazamiento si es necesario */
+  }
+  
+  /* Campos de entrada */
+  .register-form input {
+    width: 100%; /* Ocupa el ancho total del contenedor */
+    padding: 8px;
+    font-size: 14px;
+    margin-bottom: 5px; /* Espaciado entre campos */
+    box-sizing: border-box; /* Evita desbordamientos */
+  }
+  
+  /* Títulos */
+  .register-form h2 {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  /* Botones principales */
+  .register-form button {
+    width: 100%; /* Ocupa el ancho completo del contenedor */
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Hover de los botones principales */
+  .register-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Botones secundarios */
+  .register-form .cancelar-btn,
+  .register-form .regresar-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  /* Hover de los botones secundarios */
+  .register-form .cancelar-btn:hover,
+  .register-form .regresar-btn:hover {
+    background-color: #e53935;
+  }
+  
+  /* Estilo responsivo */
+  @media (max-height: 800px) {
+    .register-form {
+      max-height: 90vh; /* Ajusta el formulario para pantallas más pequeñas */
+    }
+  
+    .register-form button {
+      font-size: 12px;
+      padding: 8px;
+    }
+  }
+  

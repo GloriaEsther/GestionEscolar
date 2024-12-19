@@ -16,14 +16,17 @@ const Admin= () => {
     switch (currentView) {
       case "altaAlumno":
        // return <AltaAlumnoForm />;
-       navigate();
+       navigate('/altaalumno');
        return;
       case "reinscripcion":
-        return <h3>Reinscripción (En construcción)</h3>;
+       navigate('/altaalumnore'); 
+        return;
       case "consultarExpediente":
-        return <h3>Consultar Expediente Alumno (En construcción)</h3>;
+        navigate('expedientealumno');
+        return;
       case "cerrarSesion":
-        return <h3>Sesión cerrada. Vuelve pronto.</h3>;
+        navigate("/");
+        return;
       default:
         return <h3>Selecciona una opción</h3>;
     }
@@ -46,7 +49,7 @@ const Admin= () => {
           Cerrar Sesión
         </button>
       </div>
-      <div style={{ marginTop: "20px" }}>{renderView()}</div>
+      <div style={{ marginTop: "10px" }}>{renderView()}</div>
     </div>
   );
 };
@@ -59,7 +62,7 @@ function Admin() {
       <p>en esta parte se mostraran las opciones para administrador</p>
       {}
     </div>
-  );
+  );eran 10 px
 }
 */
 export default Admin;

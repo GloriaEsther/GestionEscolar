@@ -30,7 +30,7 @@ const Login = () => {
 
         console.log("Estado de la respuesta:", response.status);
         const data = await response.json();
-        const role = data?.user?.rol; // Extrae correctamente el rol 
+        const role = data?.usuario?.rol; // Extrae correctamente el rol 
         console.log("Datos recibidos del servidor:", data);
         if(response.ok){
           if (!role) {//si no esta
