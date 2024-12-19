@@ -2,19 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AltaAlumno.css";
 const AltaAlumnoForm = () => {
-/*
-  const [correo, setCorreo] = useState("");
-  const [nombre, setNombre] = useState("");
-  const [apellidoPaterno, setApellidoPaterno] = useState("");
-  const [apellidoMaterno, setApellidoMaterno] = useState("");
-  const [curp, setCurp] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [registradoPor, setRegistradoPor] = useState(""); // Este campo lo asigna el administrativo
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const navigate = useNavigate();
-  //const [error] = useState(""); // Mensaje de error
-*/
   const [nombreAlumno, setNombreAlumno] = useState("");
   const [apellidoPaterno, setApellidoPaterno] = useState("");
   const [apellidoMaterno, setApellidoMaterno] = useState("");
@@ -41,6 +28,40 @@ const AltaAlumnoForm = () => {
         alert("Datos incompletos, por favor complete todos los campos.");
         return;
       }
+
+      const letrasRegex = /^[a-zA-Z\s]+$/; // Solo letras y espacios
+      const numRegex = /^[0-9]+$/;   // Solo números
+      
+      if (!letrasRegex.test(nombreAlumno)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!letrasRegex.test(apellidoPaterno)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!letrasRegex.test(apellidoMaterno)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (curp.length>18) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      } else if (!numRegex.test(grado)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      } else if (!letrasRegex.test(nombreTutor)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!letrasRegex.test(apellidoPaternoT)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!letrasRegex.test(apellidoMaternoT)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }else if (!numRegex.test(numTelT)) {
+        alert("Datos incorrectos, intente de nuevo");
+        return;
+      }
+
+
       const alumnoData = {
         NombreAlumno: nombreAlumno,
         ApellidoPaterno: apellidoPaterno,
@@ -71,13 +92,24 @@ const AltaAlumnoForm = () => {
       });
 
       const data = await response.json();
-
-      if (response.ok) {
+      //console.log(`${data.ClaveAlumno}`);
+      if (response.ok) { 
         setSuccessMessage("El alumno fue registrado exitosamente.");
-        alert("El alumno fue registrado exitosamente");
-       // navigate("/alumnos"); // Redirige a la página de alumnos, por ejemplo
+        alert(`Estudiante registrado exitosamente\nClave Alumno: ${data.ClaveAlumno}`);
+        navigate('/admin');//pagina inicio administrador
       } else {
-        setError(data.message || "Error al registrar el alumno");
+        //aqui estan las validaciones del back
+        if (data.message.includes("no encontrada")) {
+          alert("Usuario no encontrada o el usuario no tiene el rol de Alumno");
+          setCorreo("");//Limpiar campo correo
+        }else if (data.message.includes("no existe")) {
+          alert("La clave de administrativo no existe");
+          setRegistradoPor("");//Limpiar campo registradopor
+        }else if (data.message.includes("alumno")) {
+          alert("El usuario ya tiene un registro como alumno");
+          setCorreo("");//Limpiar campo correo
+        }
+        //setError(data.message || "Error al registrar el alumno");
       }
     } catch (error) {
       console.error("Error en la llamada a la API:", error);
@@ -172,7 +204,7 @@ const AltaAlumnoForm = () => {
         
         <input
           type="text"
-          placeholder="Registrado por (nombre del administrativo)"
+          placeholder="Registrado por"
           value={registradoPor}
           onChange={(e) => setRegistradoPor(e.target.value)}
         />

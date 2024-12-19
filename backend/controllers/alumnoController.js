@@ -26,8 +26,7 @@ exports.createAlumno = async (req, res) => {//ya funciona pero se tiene que pone
     }
 
     
-    const alumnoExistente = await Alumnos.findOne({ where: { ClaveUsuario: usuarioExistente.ClaveUsuario } });//busca si ya hay un alumno registraso
-
+    const alumnoExistente = await Alumnos.findOne({ where: { ClaveUsuario: usuarioExistente.ClaveUsuario } });//busca si ya hay un alumno registraso 
     //Generar la clave de ALUMNO
       function generarClaveAlumno() {
           const nombreParte = (NombreAlumno || '').slice(0, 2).toUpperCase(); // 2 caracteres del nombre
@@ -41,7 +40,7 @@ exports.createAlumno = async (req, res) => {//ya funciona pero se tiene que pone
       const ClaveAlumno = generarClaveAlumno();
       console.log('ClaveAdmin:', ClaveAlumno);
   
-      
+     // const alumnoExistente = await Alumnos.findOne({ where: { ClaveAlumno: usuarioExistente.ClaveAlumno } });//busca si ya hay un alumno registraso con Clave alumno
       if (alumnoExistente) {
         return res.status(400).json({ message: 'El usuario ya tiene un registro como alumno' });
       }
@@ -64,8 +63,7 @@ exports.createAlumno = async (req, res) => {//ya funciona pero se tiene que pone
         correoT:correoT,
         ClaveUsuario: usuarioExistente.ClaveUsuario,//ClaveUsuario,
         Registradopor:Registradopor,//este dato es la clave foranea del admin que hace el modulo de alta de usuario pero se tiene pensado que el admin ingrese ese valor(en el formulario)
-        //por eso aqui se comprueba si dicha clave existe en la base y si tiene rol admin
-         // Agregar el resto de los campos del body
+        //por eso aqui se comprueba si dicha clave existe en la base y si tiene rol admin,lo mismo con correo de alumno pero lo ultimo con la intencion de relacionarlo con una clave de usuario
       };
     // Crear alumno
     const nuevoAlumno = await Alumnos.create(alumnoData);
@@ -73,6 +71,7 @@ exports.createAlumno = async (req, res) => {//ya funciona pero se tiene que pone
     res.status(201).json({
       message: 'El alumno fue registrado exitosamente',
       alumno: nuevoAlumno,
+      ClaveAlumno:nuevoAlumno.ClaveAlumno,
     });
   } catch (error) {
     console.error('Error al registrar alumno:', error);
